@@ -11,12 +11,18 @@ class ADC {
             // canais->ADMUX = (canais->ADMUX & 0x0f) | (canal & 0x0f); 
             registradores->ADMUX = (1 << 6) | (canal & 0x0f);
 
-            // Define os bits ADEN, ADSC, ADPS2, ADPS1 e ADPS0 para 1
-            registradores->ADCSRA |= (1 << 7) | (1 << 6) | (1 << 5) | (1 << 3) | (0 << 7);
+            // Define os bits ADEN, ADSC, ADATE, ADIE, ADPS2, ADPS1 e ADPS0 para 1
+            registradores->ADCSRA |= (1 << 7); // ADEN
+            registradores->ADCSRA |= (1 << 5); // ADATE
+            registradores->ADCSRA |= (1 << 3); // ADIE
+            registradores->ADCSRA |= 0b00000111; // ADPS2, ADPS1 e ADPS0
 
             // Definindo os bits ADTS2, ADTS1 e ADTS0
             registradores->ADCSRB &= 0b11111000;
 
+            __asm__ ("sei");
+
+            registradores->ADCSRA |= (1 << 6); // ADSC 
         }
 
         int get(){
@@ -29,12 +35,13 @@ class ADC {
 
             // (Polling) Enquando o bit ADSC (6) for 1, espere
             // while(registradores->ADCSRA & (1 << 6));  // implementar por interrupção
-
+            // return registradores->ADC;
             return ADC_FIFO.getLast();
         }
 
         static void ADC_Complete_handler(){
             ADC_FIFO.enqueue(registradores->ADC);
+            // ADC_FIFO.enqueue(1023);
         }
 
     private:
@@ -50,7 +57,7 @@ class ADC {
 
         static ADC_Registradores_t *registradores;
         bool primeiro = true;
-        static FIFO_C<char,16> ADC_FIFO;
+        static FIFO_C<int,16> ADC_FIFO;
 };
 
 #endif
