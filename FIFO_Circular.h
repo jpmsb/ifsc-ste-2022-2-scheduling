@@ -11,7 +11,7 @@ template<typename T, int N> class FIFO_C {
 
         ~FIFO_C(){}
 
-        void enqueue(char valor){
+        void enqueue(T valor){
             head = ++head % N;
             buffer[head] = valor;
         }
