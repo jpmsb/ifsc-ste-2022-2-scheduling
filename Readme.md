@@ -12,6 +12,11 @@ make clean ; make
 
 O comando ```make clean``` garante que código antigo seja atualizado.
 
+
+## Projeto
+
+O programa de teste encontra-se no arquivo _projeto.cpp_. A função _main_ está no arquivo _main.cpp_. O motivo da separação é para remeter o próximo possível da forma como é feita a implementação utilizando a IDE do Arduino.
+
 ## ADC
 
 O módulo ADC é o conversor de sinal analógico para digital. Através dele, um sinal de tensão é amostrado e convertido em um número inteiro digital.
