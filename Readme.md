@@ -17,6 +17,8 @@ O comando ```make clean``` garante que código antigo seja atualizado.
 
 O programa de teste encontra-se no arquivo _projeto.cpp_. A função _main_ está no arquivo _main.cpp_. O motivo da separação é para remeter o próximo possível da forma como é feita a implementação utilizando a IDE do Arduino.
 
+Em um laço de repetição, a aplicação lê a entrada analógica A0. Variando um potenciômetro de 0 a 10komhs, observa-se os valores 0 a 1023 na leitura, respectivamente. O valor 0 indica zero volts, e o valor 1023 indica 5 volts.
+
 ## ADC
 
 O módulo ADC é o conversor de sinal analógico para digital. Através dele, um sinal de tensão é amostrado e convertido em um número inteiro digital.
