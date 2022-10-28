@@ -2,6 +2,16 @@
 
 Neste repositório constam as implementações dos módulos USART, ADC e GPIO do microcontrolador ATMega328p utilizando interrupção.
 
+## Compilação e gravação
+
+Para compilar e gravar no microcontrolador ATMega328p, basta utilizado os comandos abaixo:
+
+```C++
+make clean ; make
+```
+
+O comando ```make clean``` garante que código antigo seja atualizado.
+
 ## ADC
 
 O módulo ADC é o conversor de sinal analógico para digital. Através dele, um sinal de tensão é amostrado e convertido em um número inteiro digital.
