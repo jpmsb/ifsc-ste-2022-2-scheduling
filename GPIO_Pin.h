@@ -3,8 +3,8 @@
 
 class GPIO_Pin {
     public:
-        typedef void (*HaldlerFunc)(void);
-        static HaldlerFunc handlers[2];
+        typedef void (*HandlerFunc)(void);
+        static HandlerFunc handlers[2];
 
         enum GPIO_Port_t {
             GPIO_PORTB = 0x23,

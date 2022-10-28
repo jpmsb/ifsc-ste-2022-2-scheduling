@@ -1,6 +1,6 @@
 #include "GPIO_Pin.h"
 
-GPIO_Pin::HaldlerFunc GPIO_Pin::handlers[2];
+GPIO_Pin::HandlerFunc GPIO_Pin::handlers[2];
 volatile unsigned char * GPIO_Pin::EICRA = (volatile unsigned char *) 0x69;
 volatile unsigned char * GPIO_Pin::EIMSK = (volatile unsigned char *) 0x3d;
 
