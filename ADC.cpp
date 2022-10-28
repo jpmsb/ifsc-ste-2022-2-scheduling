@@ -8,6 +8,6 @@ extern "C" {
 }
 
 void __vector_21(){
-    // chamar o tratador da interrupção de recebimento
+    // chamar o tratador da interrupção do ADC
     ADC::ADC_Complete_handler();
 }

@@ -20,28 +20,32 @@ class ADC {
             // Definindo os bits ADTS2, ADTS1 e ADTS0
             registradores->ADCSRB &= 0b11111000;
 
+            // Habilitando interrupção global
             __asm__ ("sei");
 
+            // Definindo o bit do ADSC para 1, iniciando
+            // o ciclo de conversão
             registradores->ADCSRA |= (1 << 6); // ADSC 
         }
 
         int get(){
-            // Define os bits ADEN, ADSC, ADPS2, ADPS1 e ADPS0 para 1
-            // registradores->ADCSRA = (registradores->ADCSRA | 0xc7);
-
-            // Caso seja a primeira vez, o cálculo é feito novamente
-            // if (primeiro) registradores->ADCSRA = (registradores->ADCSRA | 0xc7);
-            // primeiro = false;
-
-            // (Polling) Enquando o bit ADSC (6) for 1, espere
-            // while(registradores->ADCSRA & (1 << 6));  // implementar por interrupção
-            // return registradores->ADC;
+            // Retorna o último valor lido
             return ADC_FIFO.getLast();
+        }
+
+        int get_mean(){
+            // Retorna a média de todos os valores lidos
+            int resultado = 0;
+            for (int c = 0; c < 16; c++){
+                resultado += ADC_FIFO.get(c);
+            }
+
+            return resultado / 16;
+
         }
 
         static void ADC_Complete_handler(){
             ADC_FIFO.enqueue(registradores->ADC);
-            // ADC_FIFO.enqueue(1023);
         }
 
     private:
@@ -56,7 +60,6 @@ class ADC {
         };
 
         static ADC_Registradores_t *registradores;
-        bool primeiro = true;
         static FIFO_C<int,16> ADC_FIFO;
 };
 
