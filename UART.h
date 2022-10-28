@@ -26,9 +26,6 @@ class UART {
         }
 
         void put(char c){
-            // while (! (registradores->UCSRA & (1 << 5)));
-            // registradores->UDR = c;
-
             int retorno_fila;
             do {
             __asm__ ("cli");
@@ -43,14 +40,20 @@ class UART {
         }
 
         void put_string(const char * s){
-            // for (int c = 0; c != '\0'; c++) put(s[c]);
             while (*s != '\0') put(*s++);
             
         }
+
+        void println(const char * s){
+            put_string((const char *) s);
+            put_string("\n");
+        }
+
+        void print(const char * s){
+            put_string((const char *) s);
+        }
     
         char get(){
-            // while (! (registradores->UCSRA & (1 << 7)));
-            // return registradores->UDR;
             char dados;
             while(RxFIFO.dequeue(&dados) != FIFO<char,16>::FIFO_SUCCESS);
             return dados;
@@ -58,7 +61,6 @@ class UART {
 
         static void RxC_handler(){
             RxFIFO.enqueue(registradores->UDR);
-
         }
 
         static void TxC_handler(){

@@ -1,5 +1,4 @@
 #include "UART.h"
-// #include "FIFO.h"
  
 UART::UART_Registradores_t *UART::registradores = (UART_Registradores_t*) 0xc0;
 FIFO<char,16> UART::RxFIFO;
