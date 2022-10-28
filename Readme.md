@@ -115,6 +115,8 @@ Por fim, foi criado um objeto estático do tipo _FIFO_C_, que é a fila circular
 static FIFO_C<int,16> ADC_FIFO;
 ```
 
+### Tratador de interrupção
+
 Para aproveitar de algumas facilidades do compilador, foi criado um arquivo do tipo _cpp_ que contém a associação dos vetores de interrução aos seus tratadores. Nesse caso, o mapeamento é feito pelo próprio compilador:
 
 ```C++
@@ -153,7 +155,7 @@ No construtor é definido qual será o _baudrate_, os _data bits_, a paridade e 
 UART(int baud, int data_bits = 8, int paridade = 0, int stop_bits = 1);
 ```
 
-O único valor que o usuário é obrigado a define é o _baudrate_, que é a taxa de atualização da porta serial. O valor a ser defino é um inteiro.
+O único valor que o usuário é obrigado a definir é o _baudrate_, que é a taxa de atualização da porta serial. O valor a ser defino é um inteiro.
 
 Na instanciação da UART, são definidos os bits que configuram a forma como esta irá operar.
 
@@ -265,6 +267,8 @@ static FIFO<char,16> RxFIFO;
 static FIFO<char,16> TxFIFO;
 ```
 
+### Tratador de interrupção
+
 Como no caso anterior, para aproveitar de algumas facilidades do compilador, foi criado um arquivo do tipo _cpp_ que contém a associação dos vetores de interrução aos seus tratadores.
 
 O arquivo ficou dessa forma:
@@ -294,3 +298,201 @@ void __vector_19(){
 Os vetores 19 e 20 são o "USART Rx complete" e "USART, data register empty", respectivamente.
 
 ## GPIO
+
+As portas de entrada/saída de propósito geral (GPIO), permitem receber ou enviar sinais de valor fixo, ou seja, pulsos. Quando uma porta deste componente é definida como entrada, por exemplo, é possível inserir um sinal de tensão de 3,3 volts. Dentro do programa, o valor de 3,3 volts pode ser representado como valor 1 e se a tensão for zero volts, pode ser representado como valor 0. Consequentemente, é possível ter um botão que realiza uma ação no programa.
+
+Da mesma forma, quando uma porta desse componente é definida como saída, a mesma pode ser utilizada para acender um LED, já que, quando a mesma está definida como saída, seus valores de tensão possíveis são 3,3 volts e zero volts.
+
+Na implementação do GPIO nesta biblioteca, foi utilizado interrupção para detectar a entrada de sinal. Dessa forma, cada vez que um sinal de 3,3 volts é inserido em uma porta GPIO de entrada, uma interrupção é gerada e um tratador é chamado. Isso permite, por exemplo, acionar um botão a qualquer momento no programa sem a necessidade de que outra rotina já em execução precise ser finalizada. Para tal, a biblioteca foi implementada de forma que a função tratadora seja escolhida pelo usuário.
+
+O dia grama de classes do componente do GPIO ficou dessa forma:
+
+![Diagrama de classes do GPIO](imagens/diagrama_de_classes_GPIO.png)
+
+O GPIO possui três registradores chamados PORTB, PORTC e PORTD. Cada um deles é responsável por um grupo de pinos físicos do microcontrolador.
+
+![Pinagem do ATMega328p](imagens/atmega328p.png)
+
+### Funções tratadoras de interrupção
+
+Publicamente, foi definido o tipo _HandlerFunc_ para receber as funções que tratarão as interrupções _INT0_ ou _INT1_:
+
+```C++
+typedef void (*HandlerFunc)(void);
+static HandlerFunc handlers[2];
+```
+
+### Construtor
+
+No construtor da classe GPIO_Pin, o usuário é obrigado a definir a porta do pino físico que será utilizado, o número do pino em si, e a direção se é entrada ou saída. Caso seja entrada e uma função tratadora for definida, o uso de interrupção será habilitado.
+
+Inicialmente, define-se qual será o endereço do grupo de portas que será utilizado:
+
+```C++
+port = (PortRegisters_t *) _port;
+```
+
+Dessa forma, é escolhido entre PORTB, PORTC ou PORTD. Em seguida, é definido o bit do pino que será utilizado. Para fins de praticidade, criou-se um máscara que será utilizada futuramente. Como os registradores são compartilhados, ao se mexer em um pino, é preciso tomar cuidado para interferir em outro.
+
+```C++
+pin_mask = 1 << _pin;
+```
+
+Caso o pino tenha direção de entrada, o bit do mesmo é definido em 0. Caso seja definido para saída, é defido em 1. O registrador ajustado é o DDR.
+
+Caso queira-se utiliza interrupção, o registrador EICRA (External Interrupt Control Register A) também será ajustado. Nesse registrador, há duas interrupções que podem ser utilizadas:
+
+- Interrupt 1 Sense Control: bits ISC11 e ISC10
+- Interrupt 0 Sense Control: bits ISC01 e ISC00
+
+Cada dupla de bits de cada controle de interrupção controla o tipo de situação a qual será gerada a interrupção. os modos podem ser:
+
+| ISC11/ISC10 | ISC10/ISC00 | Descrição
+|:-----------:|:-----------:|-----------
+| 0           | 0           | Gera interrupção quando em nível baixo
+| 0           | 1           | Gera interrupção quando há mudança lógica
+| 1           | 0           | Gera interrupção na borda de descida do sinal de entrada
+| 1           | 1           | Gera interrupção na borda de subida do sinal de entrada
+
+O registrador EIMSK também precisa ser ajustado. Nele, os dois bits menos significativos ativam ou desativam cada uma das interrupções (INT0 e INT1).
+
+O código do construtor que faz essas definições ficou dessa forma:
+
+```C++
+GPIO_Pin(GPIO_Port_t _port, GPIO_PinNumber_t _pin, GPIO_Direction_t _dir, void (*_func)(void) = 0){
+    port = (PortRegisters_t *) _port;
+    pin_mask = 1 << _pin;
+
+    if (_dir == GPIO_INPUT){
+        port->ddr &= ~pin_mask;
+    } else if (_dir == GPIO_OUTPUT){
+        port->ddr |= pin_mask;
+
+    } else { // Interrupção - INT0 e INT1
+        int interrupt = _pin - 2;
+        int edge = _dir - 2;
+        unsigned char mask = (3 << interrupt * 2);
+
+        *EICRA = (*EICRA & ~mask | (edge << interrupt * 2));
+
+        *EIMSK |= (1 << interrupt);
+        handlers[interrupt] = _func;
+    }
+}
+```
+
+### Método get
+
+Retorna verdadeiro caso o pino esteja recebendo ou saindo sinal de 3,3 volts.
+
+```C++
+bool get() {
+    return ((port->pin & pin_mask) > 0);
+}
+```
+
+Na operação lógica, é verificado se o bit correspondente ao pino contém o valor 1. Caso seja 1, o retorno é verdadeiro, caso contrário, o retorno é falso.
+
+### Método set
+
+Define o valor do pino de saída. Caso seja definido como verdadeiro, o pino de saída assume valor alto. Caso contrário, valor zero.
+
+```C++
+void set(bool value){
+    if (value == 0) port->port &= ~pin_mask;
+    else if (value > 0) port->port |= pin_mask;
+}
+```
+
+### Declarações privadas
+
+Foi criada uma _struct_ para mapear os registradores utilizados. Como os endereços dos mesmo são sequenciais, bastando definir o valor do primeiro endereço, o compilador mapeia o restante sequencialmente. Para que isso funcione como desejado, as variáveis são declaradas na ordem correta.
+
+```C++
+struct PortRegisters_t {
+    volatile unsigned char pin;
+    volatile unsigned char ddr;
+    volatile unsigned char port;
+};
+```
+
+Foram criados ponteiros estáticos e voláteis para os registradores EICRA e EIMSK:
+
+```C++
+static volatile unsigned char * EICRA;
+static volatile unsigned char * EIMSK;
+```
+
+Foi criado um ponteiro para o mapeamento da _struct_:
+
+```C++
+PortRegisters_t *port;
+```
+
+Por fim, foi criado uma variável do tipo ```char``` para ser utilizada como máscara do pino que será utilizado.
+
+```C++
+unsigned char pin_mask;
+```
+
+### Enumerações
+
+Para facilitar o uso dos pinos pelo usuário, foram criadas enumerações que auxiliam a definir a funcionalidade desejada:
+
+```C++
+enum GPIO_Port_t {
+    GPIO_PORTB = 0x23,
+    GPIO_PORTC = 0x26,
+    GPIO_PORTD = 0x29
+};
+
+enum GPIO_Direction_t {
+    GPIO_INPUT = 0,
+    GPIO_OUTPUT = 1,
+    GPIO_INT_LOW = 2,
+    GPIO_INT_CHANGE = 3,
+    GPIO_INT_FALLING = 4,
+    GPIO_INT_RISING = 5
+};
+
+enum GPIO_PinNumber_t {
+    GPIO_PIN_0 = 0,
+    GPIO_PIN_1,
+    GPIO_PIN_2,
+    GPIO_PIN_3,
+    GPIO_PIN_4,
+    GPIO_PIN_5,
+    GPIO_PIN_6,
+    GPIO_PIN_7
+};
+```
+
+### Tratador de interrupção
+
+Como no caso anterior, para aproveitar de algumas facilidades do compilador, foi criado um arquivo do tipo _cpp_ que contém a associação dos vetores de interrução aos seus tratadores.
+
+O arquivo ficou dessa forma:
+
+```C++
+#include "GPIO_Pin.h"
+
+GPIO_Pin::HandlerFunc GPIO_Pin::handlers[2];
+volatile unsigned char * GPIO_Pin::EICRA = (volatile unsigned char *) 0x69;
+volatile unsigned char * GPIO_Pin::EIMSK = (volatile unsigned char *) 0x3d;
+
+extern "C" {
+    void __vector_1() __attribute__ ((signal));
+    void __vector_2() __attribute__ ((signal));
+}
+
+void __vector_1(){
+    // chamar o tratador do INT0
+    GPIO_Pin::handlers[0]();
+}
+
+void __vector_2(){
+    // chamar o tratador do INT1
+    GPIO_Pin::handlers[1]();
+}
+```
+Os vetores 2 e 3 cuidam das interrupções _INT0_ e _INT1_, respectivamente. Nesse caso, os tratadores são definidos pelo usuário.
