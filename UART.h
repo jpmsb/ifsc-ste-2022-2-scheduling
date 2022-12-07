@@ -11,7 +11,11 @@ class UART {
             UART_19200 = 51
         };
 
-        UART(int baud, int data_bits = 8, int paridade = 0, int stop_bits = 1) {
+        UART(int baud = 9600, int data_bits = 8, int paridade = 0, int stop_bits = 1) {
+            begin(baud, data_bits, paridade, stop_bits);
+        }
+
+        void begin(int baud = 9600, int data_bits = 8, int paridade = 0, int stop_bits = 1){
             int UBRRn = (8000000/(8 * (long)baud)) - 1;
 
             /* Set baud rate */
@@ -46,7 +50,7 @@ class UART {
 
         void println(const char * s){
             put_string((const char *) s);
-            put_string("\n");
+            put('\n');
         }
 
         void print(const char * s){

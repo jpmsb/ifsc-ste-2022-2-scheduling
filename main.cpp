@@ -1,7 +1,8 @@
-#include "GPIO_Pin.h"
-#include "UART.h"
-#include "ADC.h"
-#include "FIFO.h"
+// #include "definicoes.h" 
+// #include "GPIO_Pin.h"
+// #include "UART.h"
+// #include "ADC.h"
+// #include "FIFO.h"
 #include "projeto.h"
 
 int main(){
