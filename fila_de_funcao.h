@@ -29,7 +29,7 @@ class FilaDeFuncao : public FIFO<Evento, 16> {
 };
 */
 
-class FilaDeFuncao: public ListaEncadeada<Evento*, true, false, int> {
+class FilaDeFuncao: public ListaEncadeada<Evento*, true, false, char> {
     public:
         void executar(){
             Evento *proximo;
