@@ -7,14 +7,14 @@
 
 class TIMER0 {
     public:
+        static const unsigned char TOP = 125;
         static const unsigned char MAX = 255;
-        static const unsigned char TOP = 199;
-        static const unsigned char TIMER_BASE = MAX - TOP;
-        static const unsigned int TIMER_RESOLUTION = 100;
+        static const unsigned char TIMER_BASE = MAX - TOP + 1;
+        static const unsigned int TIMER_RESOLUTION = 2000;
 
         TIMER0(){
-            registradores->TCCRB = 0x02;
             registradores->TCCRA = 0x00;
+            registradores->TCCRB = 0x04;
             registradores->TCNT = TIMER_BASE;
 
             // Ajustar o registrador TIMSK0 = 0x01 para ativar a interrupção do timer
