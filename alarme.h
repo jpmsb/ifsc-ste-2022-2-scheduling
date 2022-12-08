@@ -12,9 +12,10 @@ class Alarme : public Observador {
         Alarme(FilaDeFuncao * _ffuncao) : ffuncao(_ffuncao) {}
         ~Alarme() {}
 
-        void agenda(Evento evento){
+        void agenda(Evento * evento){
+            Microssegundos tempo_corrigido = evento->tempo - (TIMER0::micros() - evento->release_time);
             __asm__("cli");
-            eventos.insere(&evento, evento.tempo);
+            eventos.insere(evento, tempo_corrigido);
             __asm__("sei");
         }
 
