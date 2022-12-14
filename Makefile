@@ -1,4 +1,4 @@
-COMPONENTS := ADC.o GPIO_Pin.o UART.o projeto-rms.o temporizador.o definicoes.o
+COMPONENTS := ADC.o GPIO_Pin.o UART.o projeto-EDD.o temporizador.o definicoes.o
 APP := main.cpp
 
 CC_FLAGS := -mmcu=atmega328p
