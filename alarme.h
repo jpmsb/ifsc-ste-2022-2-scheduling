@@ -24,8 +24,25 @@ class Alarme : public Observador {
             while (rank == 0){
                 Evento *evento = eventos.remove_inicio();
                 evento->release_time = TIMER0::micros();
+
+                // FIFO --------------------
+                #if SCHED_TYPE == SCHED_FIFO
+                ffuncao->enqueue(evento);
+                // -------------------------
+
+                // RMS -------------------------------------
+                #elif SCHED_TYPE == SCHED_RMS
                 ffuncao->insere(evento, evento->prioridade);
-                rank = eventos.atualiza_rank_inicio(0);             
+                // -----------------------------------------
+
+                // EDD -------------------------------------
+                #elif SCHED_TYPE == SCHED_EDD
+                ffuncao->insere(evento, evento->tempo);
+                // -----------------------------------------
+
+                #endif
+
+                rank = eventos.atualiza_rank_inicio(0);
             }
         }
 
