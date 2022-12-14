@@ -1,4 +1,4 @@
-# Atividade 2 - Programação de Sistemas Embarcados
+# Atividade 3 - Fila de funções e escalonamento
 
 Neste repositório constam as implementações dos módulos USART, ADC e GPIO do microcontrolador ATMega328p utilizando interrupção.
 
