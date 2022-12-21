@@ -41,9 +41,11 @@ void setup() {
     #if SCHED_TYPE == SCHED_FIFO
     alarme.agenda(&evt1);
     alarme.agenda(&evt2);
+
     #elif SCHED_TYPE == SCHED_RMS
     ffuncao.insere(&evt1, evt1.prioridade);
     ffuncao.insere(&evt2, evt2.prioridade);
+
     #elif SCHED_TYPE == SCHED_EDD
     ffuncao.insere(&evt1, evt1.tempo);
     ffuncao.insere(&evt2, evt2.tempo);
