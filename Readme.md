@@ -206,11 +206,53 @@ Para demonstrar o funcionamento dos escalonadores RMS (Rate Monotonic Scheduler)
 
 Nesse programa, o tempo de funcionamento necessário para "t0" consegue ficar dentro do prazo máximo de "t1". Sendo e0 = 2 e e1 = 2, T0 = 4 e T1 = 6, "t0" tem a prioridade.
 
+Resultado parcial da execução do programa:
+
+```
+0 RMS - Funcionando de acordo (exemplo 1)
+0 RMS: T0 - inicio
+2020 RMS: T0 - fim
+2020 RMS: T1 - inicio
+4044 RMS: T1 - fim
+4044 RMS: T0 - inicio
+6068 RMS: T0 - fim
+6068 RMS: T1 - inicio
+8092 RMS: T1 - fim
+8092 RMS: T0 - inicio
+10116 RMS: T0 - fim
+12000 RMS: T0 - inicio
+14004 RMS: T0 - fim
+14006 RMS: T1 - inicio
+16030 RMS: T1 - fim
+```
+
 ### RMS cujo T1 perde seu prazo
 
 Nesse programa, o tempo de funcionamento necessário para "t0" consegue ficar dentro do prazo máximo de "t1". Sendo e0 = 2+i e e1 = 2, T0 = 4 e T1 = 6, "t0" tem a prioridade.
 
 Por "t0" ter uma duração de execução, cuja sequência não cabe dentro do prazo de "t1", esta acaba iniciando tadiamente.
+
+Resultado parcial da execução do programa:
+
+```
+0 RMS - t1 perdeu seu prazo (exemplo 2)
+0 RMS: T0 - inicio
+2022 RMS: T0 - fim
+2022 RMS: T1 - inicio
+4046 RMS: T1 - fim
+4046 RMS: T0 - inicio
+6072 RMS: T0 - fim
+6072 RMS: T1 - inicio
+8096 RMS: T1 - fim
+8096 RMS: T0 - inicio
+10122 RMS: T0 - fim
+12000 RMS: T0 - inicio
+14006 RMS: T0 - fim
+14008 RMS: T1 - inicio
+16032 RMS: T1 - fim
+16034 RMS: T0 - inicio
+18060 RMS: T0 - fim
+```
 
 ### EDD funcional
 
@@ -225,6 +267,22 @@ Nesse programa, a prioridade é para quem tem o menos prazo para finalizar. Ness
 | t4 | 2  | 5  |
 
 As tarefas são executadas na seguinte ordem: t0, t4, t2, t3, t1.
+
+Resultado da execução do programa:
+
+```
+0 EDD - Funcionando de acordo (exemplo 1)
+0 EDD: T0 - inicio
+1 EDD: T0 - fim
+1 EDD: T4 - inicio
+3 EDD: T4 - fim
+3 EDD: T2 - inicio
+4 EDD: T2 - fim
+4 EDD: T3 - inicio
+7 EDD: T3 - fim
+7 EDD: T1 - inicio
+8 EDD: T1 - fim
+```
 
 ### EDD cujo T3 perde seu prazo
 
@@ -242,5 +300,29 @@ As tarefas são executadas na seguinte ordem: t0, t2, t1, t4, t3.
 
 "t3" ficou por último, iniciando no tempo 6. Seu prazo é no tempo 8 e como demora 4 tempos para ser executa, passa 2 tempos do prazo.
 
+Resultado da execução do programa:
+
+```
+0 EDD - T3 perdeu seu prazo (exemplo 2)
+0 EDD: T0 - inicio
+1 EDD: T0 - fim
+1 EDD: T2 - inicio
+2 EDD: T2 - fim
+2 EDD: T1 - inicio
+4 EDD: T1 - fim
+4 EDD: T4 - inicio
+6 EDD: T4 - fim
+6 EDD: T3 - inicio
+10 EDD: T3 - fim
+```
+
+### Resultados
+
+Os resultados dos programas de testes podem ser conferidos no diretório "resultados". Os arquivos de texto tem o seguinte formato:
+
+- EDD: %tempo_em_segundos %texto
+- RMS: %tempo_em_milissegundos %texto
+
 ## Diagrama de classes da biblioteca inteira
+
 ![Modelagem completa da biblioteca](imagens/diagrama-de-classes-geral.png)
