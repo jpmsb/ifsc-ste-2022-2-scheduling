@@ -1,0 +1,11 @@
+0 EDD - T3 perdeu seu prazo (exemplo 2)
+0 EDD: T0 - inicio
+1 EDD: T0 - fim
+1 EDD: T2 - inicio
+2 EDD: T2 - fim
+2 EDD: T1 - inicio
+4 EDD: T1 - fim
+4 EDD: T4 - inicio
+6 EDD: T4 - fim
+6 EDD: T3 - inicio
+10 EDD: T3 - fim
