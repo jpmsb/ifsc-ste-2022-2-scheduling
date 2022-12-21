@@ -212,9 +212,31 @@ Por "t0" ter uma duração de execução, cuja sequência não cabe dentro do pr
 
 Nesse programa, a prioridade é para quem tem o menos prazo para finalizar. Nesse caso, os prazos das tarefas estão dispostas de forma coesa e todo mundo termina no prazo certo.
 
+|    | ek | dk |
+|----|:--:|:--:|
+| t0 | 1  | 3  |
+| t1 | 1  | 10 |
+| t2 | 1  | 7  |
+| t3 | 3  | 8  |
+| t4 | 2  | 5  |
+
+As tarefas são executadas na seguinte ordem: t0, t4, t2, t3, t1.
+
 ### EDD cujo T3 perde seu prazo
 
 Nesse programa, a prioridade é para quem tem o menos prazo para finalizar. Nesse caso, os prazos das tarefas não estão dispostas de forma coesa e todo mundo termina no prazo certo.
+
+|    | ek | dk |
+|----|:--:|:--:|
+| t0 | 1  | 2  |
+| t1 | 2  | 5  |
+| t2 | 1  | 4  |
+| t3 | 4  | 8  |
+| t4 | 2  | 6  |
+
+As tarefas são executadas na seguinte ordem: t0, t2, t1, t4, t3. 
+
+"t3" ficou por último, iniciando no tempo 6. Seu prazo é no tempo 8 e como demora 4 tempos para ser executa, passa 2 tempos do prazo.
 
 ## Diagrama de classes da biblioteca inteira
 ![Modelagem completa da biblioteca](imagens/diagrama-de-classes-geral.png)
