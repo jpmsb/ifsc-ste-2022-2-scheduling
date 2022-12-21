@@ -108,3 +108,6 @@ Utilizado quando o dado a ser inserido ocupa a última posição, ou seja, é an
 ## FIFO Circular
 
 ## Fila de função
+
+## Diagrama de classes da biblioteca inteira
+![Modelagem completa da biblioteca](imagens/diagrama-de-classes-geral.png)
