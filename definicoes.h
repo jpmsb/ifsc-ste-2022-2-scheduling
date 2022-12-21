@@ -7,7 +7,7 @@ typedef unsigned long long Microssegundos; // 64 bits
 #define SCHED_RMS 1
 #define SCHED_EDD 2
 
-#define SCHED_TYPE SCHED_RMS
+#define SCHED_TYPE SCHED_EDD
 
 // Enable dynamic objects creation/destruction with C++
 typedef unsigned int size_t;
