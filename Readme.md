@@ -192,7 +192,11 @@ Põe o sistema em espera pelo tempo em que for definido no parâmetro "d". Esse 
 
 ## FIFO Circular
 
+É uma fila de tamanho "N", definido quando for instanciada. Na fila circular, o elementos pode ser adicionados indefinidamente. Quando a fila atingir o tamanho "N", ou seja, quando todas as posições estiverem ocupadas, o elemento mais antigo é sobrescrevido pelo novo elemento adicionado.
+
 ## Fila de função
+
+Nessa biblioteca, dependendo do tipo de escalonamento definido no arquivo "definicoes.h", essa fila pode herdar da FIFO ou da ListaEncadeada. Caso o modo de escalonamento seja "SCHED_FIFO", a fila de função herdará da FIFO. Caso o modo de escalonamento seja "SCHED_RMS" ou "SCHED_EDD", a fila de função herda da ListaEncadeada.
 
 ## Programas de teste
 
