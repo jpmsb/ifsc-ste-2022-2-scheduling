@@ -12,6 +12,6 @@ typedef unsigned long long Microssegundos; // 64 bits
 // Enable dynamic objects creation/destruction with C++
 typedef unsigned int size_t;
 void *operator new   (size_t objsize);
-void  operator delete(void* obj);
+void  operator delete(void* obj, size_t size);
 
 #endif // __DEFINICOES_H__
