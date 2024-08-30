@@ -2,6 +2,28 @@
 
 Neste repositório constam as implementações da fila de função, alarme, temporizador (*Timer*).
 
+### Sumário
+
+- [Requisitos](#requisitos)
+- [Compilação e gravação](#compilação-e-gravação)
+- [Projeto](#projeto)
+  - [Lista Encadeada](#lista-encadeada)
+  - [Alarme](#alarme)
+  - [Temporizador](#temporizador)
+  - [FIFO Circular](#fifo-circular)
+  - [Fila de função](#fila-de-função)
+  - [Programas de teste](#programas-de-teste)
+  - [Resultados](#resultados)
+- [Diagrama de classes da biblioteca inteira](#diagrama-de-classes-da-biblioteca-inteira)
+
+## Requisitos
+
+Para compilar e gravar o código no microcontrolador, é necessário ter instalado o compilador AVR-GCC e o gravador AVRDUDE. Para instalar, basta executar o comando abaixo:
+
+```
+sudo zypper install cross-avr-gcc14 avr-libc cross-avr-binutils avrdude
+```
+
 ## Compilação e gravação
 
 Para compilar e gravar no microcontrolador ATMega328p, basta utilizar os comandos abaixo:
